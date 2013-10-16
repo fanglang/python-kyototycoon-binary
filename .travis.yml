@@ -1,0 +1,25 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+before_install:
+  - sudo apt-get install python-dev libevent-dev
+install:
+  - tar xzf files/kyotocabinet-1.2.76.tar.gz
+  - cd kyotocabinet-1.2.76
+  - ./configure
+  - make
+  - sudo make install
+  - cd ..
+  - sudo ldconfig
+  - tar xzf files/kyototycoon-0.9.56.tar.gz
+  - cd kyototycoon-0.9.56
+  - ./configure
+  - make
+  - sudo make install
+  - cd ..
+  - sudo ldconfig
+before_script:
+  - ktserver -dmn
+script:
+  - python setup.py test

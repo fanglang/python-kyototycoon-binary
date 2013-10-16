@@ -1,0 +1,14 @@
+*.pyc
+*.c
+*.so
+*.egg-info
+*.egg
+.coverage
+.ropeproject
+.vagrant
+.venv*
+*.sublime-*
+build
+dist
+docs/_build
+Vagrantfile
