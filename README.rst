@@ -16,7 +16,8 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install cython python-kyototycoon-binary
+    $ pip install cython
+    $ pip install python-kyototycoon-binary
 
 Basic Usage
 -----------
