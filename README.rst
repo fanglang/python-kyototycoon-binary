@@ -29,6 +29,10 @@ Basic Usage
     2
     >>> client.get_bulk(['key1', 'key2', 'key3'])
     {'key2': 'value2', 'key1': 'value1'}
+    >>> client.remove_bulk(['key1', 'key2'])
+    1
+    >>> client.get_bulk(['key1', 'key2', 'key3'])
+    {'key1': 'value1'}
 
 Performance
 -----------

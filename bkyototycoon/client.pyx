@@ -9,6 +9,7 @@ import gsocketpool.connection
 
 MB_SET_BULK = 0xb8
 MB_GET_BULK = 0xba
+MB_REMOVE_BULK = 0xb9
 MB_ERROR = 0xbf
 FLAG_NOREPLY = 0x01
 
@@ -27,6 +28,10 @@ cdef class KyotoTycoonConnection:
         2
         >>> client.get_bulk(['key1', 'key2', 'key3'])
         {'key2': 'value2', 'key1': 'value1'}
+        >>> client.remove_bulk(['key1', 'key2'])
+        1
+        >>> client.get_bulk(['key1', 'key2', 'key3'])
+        {'key1': 'value1'}
 
     :param str host: (optional) Hostname.
     :param int port: (optional) Port.
@@ -87,7 +92,7 @@ cdef class KyotoTycoonConnection:
             return False
 
     def get_bulk(self, list keys):
-        """Retreives multiple cached values from the server.
+        """Retreives multiple records at once.
 
         :param list keys: Cache keys.
         """
@@ -133,10 +138,10 @@ cdef class KyotoTycoonConnection:
         return result
 
     def set_bulk(self, dict data, long lifetime=0xffffffffff, bint async=False):
-        """Sends multiple cache items to the server.
+        """Stores multiple records at once.
 
-        :param dict data: Data to be cached.
-        :param int lifetime: The number of seconds until the data will expire.
+        :param dict data: Records to be cached.
+        :param int lifetime: The number of seconds until the records will expire.
         :param bool async: If set to True, the function immediately returns
             after sending the request.
         """
@@ -184,6 +189,52 @@ cdef class KyotoTycoonConnection:
         else:
             raise KyotoTycoonError('Unknown server error')
 
+    def remove_bulk(self, list keys, async=False):
+        """Removes multiple records at once.
+
+        :param list keys: Cache keys to be removed.
+        :param bool async: If set to True, the function immediately returns
+            after sending the request.
+        """
+
+        assert self._socket is not None, 'The connection has not been established'
+
+        cdef int flags
+
+        if async:
+            flags = FLAG_NOREPLY
+        else:
+            flags = 0
+
+        cdef bytes key
+        cdef bytes req
+
+        req = b''
+        req += struct.pack('!BII', MB_REMOVE_BULK, flags, len(keys))
+        for key in keys:
+            req += struct.pack('!HI', 0, len(key))
+            req += key
+
+        self._socket.sendall(req)
+
+        if async:
+            return None
+
+        # parse the response
+        cdef int magic, rec_len
+        cdef dict result = {}
+
+        (magic,) = struct.unpack('!B', self._read(1))
+        if magic == MB_REMOVE_BULK:
+            (rec_len,) = struct.unpack('!I', self._read(4))
+            return rec_len
+
+        elif magic == MB_ERROR:
+            raise KyotoTycoonError('Internal server error')
+
+        else:
+            raise KyotoTycoonError('Unknown server error')
+
     cdef bytes _read(self, int length):
         cdef int read = 0
         cdef buf = ''
@@ -210,7 +261,6 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
         >>> with pool.connection() as conn:
         ...     conn.set_bulk({'key1': 'value1'})
         ...     conn.get_bulk(['key1'])
-        ...
         1
         {'key1': 'value1'}
 
