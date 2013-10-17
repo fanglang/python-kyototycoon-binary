@@ -11,7 +11,7 @@ if 'setuptools.extension' in sys.modules:
 setup(
     name='python-kyototycoon-binary',
     version='0.0.1',
-    description='A lightweight KyotoTycoon client library',
+    description='A Python client for accessing Kyoto Tycoon using binary protocol',
     long_description=open('README.rst').read(),
     author='Studio Ousia',
     author_email='admin@ousia.jp',
