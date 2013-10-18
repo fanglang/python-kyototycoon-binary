@@ -10,7 +10,7 @@ if 'setuptools.extension' in sys.modules:
 
 setup(
     name='python-kyototycoon-binary',
-    version='0.0.1',
+    version='0.1',
     description='A fast Kyoto Tycoon client',
     long_description=open('README.rst').read(),
     author='Studio Ousia',
@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     keywords=[],
     classifiers=(
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
