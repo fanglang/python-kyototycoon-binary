@@ -51,3 +51,8 @@ In our benchmark tests, *python-kyototycoon-binary* was about **6-8 faster** tha
     python-kyototycoon-binary set_bulk_with_pool qps: 42961
     python-kyototycoon get_bulk qps: 4394
     python-kyototycoon set_bulk qps: 4534
+
+Documentation
+-------------
+
+Documentation is available at http://python-kyototycoon-binary.readthedocs.org.
