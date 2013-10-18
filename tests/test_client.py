@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import gsocketpool.pool
 import time
 import uuid
 
 from mock import Mock, patch
 from nose.tools import *
 
-from bkyototycoon.client import KyotoTycoonConnection
+from bkyototycoon.client import KyotoTycoonConnection, KyotoTycoonPoolConnection
 
 
 class TestKyotoTycoonConnection(object):
@@ -95,3 +96,36 @@ class TestKyotoTycoonConnection(object):
 
         time.sleep(1)
         eq_({}, connection.get_bulk(data.keys()))
+
+
+class TestKyotoTycoonPoolConnection(object):
+    def setUp(self):
+        self._pool = gsocketpool.pool.Pool(KyotoTycoonPoolConnection)
+
+    def test_with_statement(self):
+        with self._pool.connection() as client:
+            ok_(isinstance(client, KyotoTycoonConnection))
+            ok_(client.is_connected())
+
+    def test_get_bulk(self):
+        data = {uuid.uuid1().hex: 1}
+
+        with self._pool.connection() as client:
+            client.set_bulk(data)
+
+            eq_(data, client.get_bulk(data.keys()))
+
+    def test_set_bulk(self):
+        data = {uuid.uuid1().hex: 1}
+
+        with self._pool.connection() as client:
+            eq_(1, client.set_bulk(data))
+            eq_(data, client.get_bulk(data.keys()))
+
+    def test_remove_bulk(self):
+        data = {uuid.uuid1().hex: 1}
+
+        with self._pool.connection() as client:
+            client.set_bulk(data)
+            eq_(1, client.remove_bulk(data.keys()))
+            eq_({}, client.get_bulk(data.keys()))

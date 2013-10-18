@@ -189,7 +189,7 @@ cdef class KyotoTycoonConnection:
         else:
             raise KyotoTycoonError('Unknown server error')
 
-    def remove_bulk(self, list keys, async=False):
+    def remove_bulk(self, list keys, bint async=False):
         """Removes multiple records at once.
 
         :param list keys: Cache keys to be removed.
@@ -273,3 +273,59 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
 
     def __init__(self, host='127.0.0.1', port=1978, timeout=None, pack=True):
         KyotoTycoonConnection.__init__(self, host, port, timeout, pack, lazy=True)
+
+    def get_bulk(self, list keys):
+        """Retreives multiple records at once.
+
+        :param list keys: Cache keys.
+        """
+
+        try:
+            return KyotoTycoonConnection.get_bulk(self, keys)
+
+        except socket.timeout:
+            self.reconnect()
+            raise
+
+        except IOError:
+            self.reconnect()
+            raise
+
+    def set_bulk(self, dict data, long lifetime=0xffffffffff, bint async=False):
+        """Stores multiple records at once.
+
+        :param dict data: Records to be cached.
+        :param int lifetime: The number of seconds until the records will expire.
+        :param bool async: If set to True, the function immediately returns
+            after sending the request.
+        """
+
+        try:
+            return KyotoTycoonConnection.set_bulk(self, data, lifetime, async)
+
+        except socket.timeout:
+            self.reconnect()
+            raise
+
+        except IOError:
+            self.reconnect()
+            raise
+
+    def remove_bulk(self, list keys, bint async=False):
+        """Removes multiple records at once.
+
+        :param list keys: Cache keys to be removed.
+        :param bool async: If set to True, the function immediately returns
+            after sending the request.
+        """
+
+        try:
+            return KyotoTycoonConnection.remove_bulk(self, keys, async)
+
+        except socket.timeout:
+            self.reconnect()
+            raise
+
+        except IOError:
+            self.reconnect()
+            raise
