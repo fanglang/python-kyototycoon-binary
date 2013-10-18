@@ -39,7 +39,7 @@ cdef class KyotoTycoonConnection:
     :param bool pack: (optional) If set to True, all values are automatically
         serialized using MessagePack.
     :param bool lazy: (optional) If set to True, the socket connection is not
-        established until you specifically call open()
+        established until you specifically call :func:`open() <bkyototycoon.KyotoTycoonConnection.open>`.
     """
 
     cdef bytes _host

@@ -7,7 +7,7 @@ python-kyototycoon-binary
 .. image:: https://travis-ci.org/studio-ousia/python-kyototycoon-binary.png?branch=master
     :target: https://travis-ci.org/studio-ousia/python-kyototycoon-binary
 
-A Python client for accessing `Kyoto Tycoon <http://fallabs.com/kyototycoon/>`_ using binary protocol.
+A lightweight Python client for accessing `Kyoto Tycoon <http://fallabs.com/kyototycoon/>`_ via its binary protocol.
 
 The specification of the binary protocol is explained `here <http://fallabs.com/blog/promenade.cgi?id=19>`_.
 
@@ -16,7 +16,7 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install cython
+    $ pip install Cython
     $ pip install python-kyototycoon-binary
 
 Basic Usage
@@ -51,11 +51,3 @@ In our benchmark tests, *python-kyototycoon-binary* was about **6-8 faster** tha
     python-kyototycoon-binary set_bulk_with_pool qps: 42961
     python-kyototycoon get_bulk qps: 4394
     python-kyototycoon set_bulk qps: 4534
-
-Environment
-^^^^^^^^^^^
-
-- OS: Mac OS X 10.8.5
-- CPU: Intel Core i7 2GHz
-- Memory: 8GB
-- Python: 2.7.3
