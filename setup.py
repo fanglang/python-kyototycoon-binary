@@ -34,10 +34,12 @@ setup(
         'gsocketpool',
         'msgpack-python',
     ],
+    setup_requires=[
+        'setuptools_cython',
+    ],
     tests_require=[
         'nose',
         'mock',
-        'setuptools_cython',
     ],
     test_suite = 'nose.collector'
 )
