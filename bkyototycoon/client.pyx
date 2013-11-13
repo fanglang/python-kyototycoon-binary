@@ -137,7 +137,7 @@ cdef class KyotoTycoonConnection:
 
         return result
 
-    def set_bulk(self, dict data, long lifetime=0xffffffffff, bint async=False):
+    def set_bulk(self, dict data, long lifetime=0x7fffffff, bint async=False):
         """Stores multiple records at once.
 
         :param dict data: Records to be cached.
@@ -291,7 +291,7 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
             self.reconnect()
             raise
 
-    def set_bulk(self, dict data, long lifetime=0xffffffffff, bint async=False):
+    def set_bulk(self, dict data, long lifetime=0x7fffffff, bint async=False):
         """Stores multiple records at once.
 
         :param dict data: Records to be cached.
