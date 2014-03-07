@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from setuptools import setup, find_packages
 from Cython.Build import cythonize
 
-if 'setuptools.extension' in sys.modules:
-    m = sys.modules['setuptools.extension']
-    m.Extension.__dict__ = m._Extension.__dict__
-
 setup(
     name='python-kyototycoon-binary',
-    version='0.1.1',
+    version='0.1.2',
     description='A Python client for accessing Kyoto Tycoon via binary protocol',
     long_description=open('README.rst').read(),
     author='Studio Ousia',
@@ -33,9 +28,6 @@ setup(
     install_requires=[
         'gsocketpool',
         'msgpack-python',
-    ],
-    setup_requires=[
-        'setuptools_cython',
     ],
     tests_require=[
         'nose',
