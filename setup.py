@@ -5,7 +5,7 @@ from Cython.Build import cythonize
 
 setup(
     name='python-kyototycoon-binary',
-    version='0.1.2',
+    version='0.1.3',
     description='A Python client for accessing Kyoto Tycoon via binary protocol',
     long_description=open('README.rst').read(),
     author='Studio Ousia',
