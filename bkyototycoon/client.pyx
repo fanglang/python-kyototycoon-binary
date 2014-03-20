@@ -40,6 +40,10 @@ cdef class KyotoTycoonConnection:
         serialized using MessagePack.
     :param bool lazy: (optional) If set to True, the socket connection is not
         established until you specifically call :func:`open() <bkyototycoon.KyotoTycoonConnection.open>`.
+    :param str pack_encoding: (optional) The character encoding used to pack
+        values using MessagePack.
+    :param str unpack_encoding: (optional) The character encoding used to unpack
+        values using MessagePack.
     """
 
     cdef bytes _host
@@ -47,13 +51,17 @@ cdef class KyotoTycoonConnection:
     cdef bint _pack
     cdef _timeout
     cdef _socket
+    cdef _pack_encoding
+    cdef _unpack_encoding
 
     def __init__(self, host='127.0.0.1', port=1978, timeout=None, pack=True,
-                 lazy=False):
+                 lazy=False, pack_encoding='utf-8', unpack_encoding='utf-8'):
         self._host = host
         self._port = port
         self._timeout = timeout
         self._pack = pack
+        self._pack_encoding = pack_encoding
+        self._unpack_encoding = unpack_encoding
 
         if not lazy:
             self.open()
@@ -125,7 +133,7 @@ cdef class KyotoTycoonConnection:
                 val = self._read(val_len)
 
                 if self._pack:
-                    result[key] = msgpack.unpackb(val)
+                    result[key] = msgpack.unpackb(val, encoding=self._unpack_encoding)
                 else:
                     result[key] = val
 
@@ -163,7 +171,7 @@ cdef class KyotoTycoonConnection:
         req += struct.pack('!BII', MB_SET_BULK, flags, len(data))
         for (key, val) in data.iteritems():
             if self._pack:
-                val = msgpack.packb(val)
+                val = msgpack.packb(val, encoding=self._pack_encoding)
 
             req += struct.pack('!HIIq', 0, len(key), len(val), lifetime)
             req += key
@@ -269,10 +277,18 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
     :param float timeout: (optional) Timeout.
     :param bool pack: (optional) If set to True, all values are automatically
         serialized using MessagePack.
+    :param str pack_encoding: (optional) The character encoding used to pack
+        values using MessagePack.
+    :param str unpack_encoding: (optional) The character encoding used to unpack
+        values using MessagePack.
     """
 
-    def __init__(self, host='127.0.0.1', port=1978, timeout=None, pack=True):
-        KyotoTycoonConnection.__init__(self, host, port, timeout, pack, lazy=True)
+    def __init__(self, host='127.0.0.1', port=1978, timeout=None, pack=True,
+                 pack_encoding='utf-8', unpack_encoding='utf-8'):
+        KyotoTycoonConnection.__init__(
+            self, host, port, timeout=timeout, pack=pack, lazy=True,
+            pack_encoding=pack_encoding, unpack_encoding=unpack_encoding)
+
 
     def get_bulk(self, list keys):
         """Retreives multiple records at once.
