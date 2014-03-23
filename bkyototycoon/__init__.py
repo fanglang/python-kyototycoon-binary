@@ -1,2 +1,2 @@
-from client import KyotoTycoonConnection
-from client import KyotoTycoonPoolConnection
+from .client import KyotoTycoonConnection
+from .client import KyotoTycoonPoolConnection

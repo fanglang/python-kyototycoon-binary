@@ -99,10 +99,11 @@ cdef class KyotoTycoonConnection:
         else:
             return False
 
-    def get_bulk(self, list keys):
+    def get_bulk(self, list keys, short db=0):
         """Retreives multiple records at once.
 
         :param list keys: Cache keys.
+        :param int db: The number of DB. (default:0)
         """
 
         assert self._socket is not None, 'The connection has not been established'
@@ -113,7 +114,7 @@ cdef class KyotoTycoonConnection:
         req = b''
         req += struct.pack('!BII', MB_GET_BULK, 0, len(keys))
         for key in keys:
-            req += struct.pack('!HI', 0, len(key))
+            req += struct.pack('!HI', db, len(key))
             req += key
 
         # send the request
@@ -145,11 +146,12 @@ cdef class KyotoTycoonConnection:
 
         return result
 
-    def set_bulk(self, dict data, long lifetime=0x7fffffff, bint async=False):
+    def set_bulk(self, dict data, short db=0, long lifetime=0x7fffffff, bint async=False):
         """Stores multiple records at once.
 
         :param dict data: Records to be cached.
         :param int lifetime: The number of seconds until the records will expire.
+        :param int db: The number of DB. (default:0)
         :param bool async: If set to True, the function immediately returns
             after sending the request.
         """
@@ -173,7 +175,7 @@ cdef class KyotoTycoonConnection:
             if self._pack:
                 val = msgpack.packb(val, encoding=self._pack_encoding)
 
-            req += struct.pack('!HIIq', 0, len(key), len(val), lifetime)
+            req += struct.pack('!HIIq', db, len(key), len(val), lifetime)
             req += key
             req += val
 
@@ -197,10 +199,11 @@ cdef class KyotoTycoonConnection:
         else:
             raise KyotoTycoonError('Unknown server error')
 
-    def remove_bulk(self, list keys, bint async=False):
+    def remove_bulk(self, list keys, short db=0, bint async=False):
         """Removes multiple records at once.
 
         :param list keys: Cache keys to be removed.
+        :param int db: The number of DB. (default:0)
         :param bool async: If set to True, the function immediately returns
             after sending the request.
         """
@@ -220,7 +223,7 @@ cdef class KyotoTycoonConnection:
         req = b''
         req += struct.pack('!BII', MB_REMOVE_BULK, flags, len(keys))
         for key in keys:
-            req += struct.pack('!HI', 0, len(key))
+            req += struct.pack('!HI', db, len(key))
             req += key
 
         self._socket.sendall(req)
@@ -290,14 +293,15 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
             pack_encoding=pack_encoding, unpack_encoding=unpack_encoding)
 
 
-    def get_bulk(self, list keys):
+    def get_bulk(self, list keys, short db=0):
         """Retreives multiple records at once.
 
         :param list keys: Cache keys.
+        :param int db: The number of DB. (default:0)
         """
 
         try:
-            return KyotoTycoonConnection.get_bulk(self, keys)
+            return KyotoTycoonConnection.get_bulk(self, keys, db=0)
 
         except socket.timeout:
             self.reconnect()
@@ -307,17 +311,18 @@ class KyotoTycoonPoolConnection(KyotoTycoonConnection, gsocketpool.connection.Co
             self.reconnect()
             raise
 
-    def set_bulk(self, dict data, long lifetime=0x7fffffff, bint async=False):
+    def set_bulk(self, dict data, short db=0, long lifetime=0x7fffffff, bint async=False):
         """Stores multiple records at once.
 
         :param dict data: Records to be cached.
         :param int lifetime: The number of seconds until the records will expire.
+        :param int db: The number of DB. (default:0)
         :param bool async: If set to True, the function immediately returns
             after sending the request.
         """
 
         try:
-            return KyotoTycoonConnection.set_bulk(self, data, lifetime, async)
+            return KyotoTycoonConnection.set_bulk(self, data, db, lifetime, async)
 
         except socket.timeout:
             self.reconnect()
